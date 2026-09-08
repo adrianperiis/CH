@@ -1,0 +1,841 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="CHALETEO — música, amistad, fotos y recuerdos." />
+    <title>CHALETEO</title>
+    <style>
+      @font-face {
+        font-family: "Varsity CH";
+        src: url("assets/VarsityTeam-Bold.otf") format("opentype");
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+      }
+      :root {
+        --bar-height: 58px;
+        --ink: #080808;
+        --paper: #fff;
+        --pink: #f2a9c1;
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; background: #000; }
+      body {
+        margin: 0;
+        color: var(--paper);
+        background: #000;
+        font-family: Arial, Helvetica, sans-serif;
+        overflow-x: hidden;
+      }
+
+      button, a { -webkit-tap-highlight-color: transparent; }
+
+      .topbar {
+        position: fixed;
+        z-index: 50;
+        inset: 0 0 auto;
+        height: var(--bar-height);
+        display: grid;
+        grid-template-columns: var(--bar-height) 1fr var(--bar-height);
+        align-items: center;
+        color: var(--ink);
+        background: var(--paper);
+        border-bottom: 1px solid rgba(0, 0, 0, .12);
+      }
+
+      .menu-button {
+        width: var(--bar-height);
+        height: var(--bar-height);
+        padding: 0;
+        display: grid;
+        place-items: center;
+        border: 0;
+        background: transparent;
+        color: inherit;
+        cursor: pointer;
+      }
+
+      .menu-icon { width: 25px; height: 18px; position: relative; }
+      .menu-icon::before,
+      .menu-icon::after,
+      .menu-icon span {
+        content: "";
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        border-radius: 2px;
+        background: currentColor;
+        transition: transform .28s ease, top .28s ease, opacity .2s ease;
+      }
+      .menu-icon::before { top: 0; }
+      .menu-icon span { top: 8px; }
+      .menu-icon::after { top: 16px; }
+      .menu-button[aria-expanded="true"] .menu-icon::before { top: 8px; transform: rotate(45deg); }
+      .menu-button[aria-expanded="true"] .menu-icon span { opacity: 0; }
+      .menu-button[aria-expanded="true"] .menu-icon::after { top: 8px; transform: rotate(-45deg); }
+
+      .announcement {
+        min-width: 0;
+        height: 100%;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+      }
+      .announcement-track {
+        display: flex;
+        width: max-content;
+        animation: announcement-loop 20s linear infinite;
+        will-change: transform;
+      }
+      .announcement-group {
+        display: flex;
+        flex-shrink: 0;
+        align-items: center;
+      }
+      .announcement-group span {
+        display: block;
+        flex-shrink: 0;
+        white-space: nowrap;
+        padding: 0 clamp(110px, 13vw, 220px);
+        font-size: clamp(.82rem, 1.2vw, .95rem);
+        font-weight: 800;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+      }
+      @keyframes announcement-loop {
+        from { transform: translateX(0); }
+        to { transform: translateX(-50%); }
+      }
+
+
+      .drawer {
+        position: fixed;
+        z-index: 40;
+        top: var(--bar-height);
+        left: 0;
+        width: min(86vw, 370px);
+        height: calc(100dvh - var(--bar-height));
+        padding: 42px 28px;
+        display: flex;
+        flex-direction: column;
+        background: rgba(5, 5, 5, .97);
+        border-right: 1px solid rgba(255,255,255,.18);
+        transform: translateX(-102%);
+        transition: transform .42s cubic-bezier(.76, 0, .24, 1);
+      }
+      .drawer.open { transform: translateX(0); }
+      .drawer-label {
+        margin: 0 0 28px;
+        color: rgba(255,255,255,.5);
+        font-size: .72rem;
+        font-weight: 800;
+        letter-spacing: .18em;
+        text-transform: uppercase;
+      }
+      .drawer a {
+        color: #fff;
+        text-decoration: none;
+        font-size: clamp(1.7rem, 7vw, 2.35rem);
+        font-weight: 800;
+        letter-spacing: -.04em;
+        line-height: 1.35;
+      }
+      .drawer a:hover, .drawer a:focus-visible { color: var(--pink); }
+      .drawer-foot {
+        margin-top: auto;
+        color: rgba(255,255,255,.45);
+        font-size: .78rem;
+        letter-spacing: .12em;
+      }
+
+      .scrim {
+        position: fixed;
+        z-index: 30;
+        inset: var(--bar-height) 0 0;
+        background: rgba(0,0,0,.46);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .3s ease;
+      }
+      .scrim.visible { opacity: 1; pointer-events: auto; }
+
+      .hero {
+        position: relative;
+        min-height: 100svh;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        isolation: isolate;
+      }
+      .hero-video {
+        position: absolute;
+        z-index: -3;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .hero::before {
+        content: "";
+        position: absolute;
+        z-index: -2;
+        inset: 0;
+        background: rgba(0,0,0,.56);
+      }
+      .hero::after {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        inset: 0;
+        background: radial-gradient(circle at center, transparent 8%, rgba(0,0,0,.2) 60%, rgba(0,0,0,.48) 100%);
+      }
+      .hero-logo {
+        width: clamp(170px, 34vw, 390px);
+        aspect-ratio: 1;
+        object-fit: contain;
+        mix-blend-mode: screen;
+        filter: drop-shadow(0 12px 40px rgba(0,0,0,.5));
+        animation: logo-in 1.1s cubic-bezier(.22, 1, .36, 1) both;
+      }
+      @keyframes logo-in {
+        from { opacity: 0; transform: scale(.84); }
+        to { opacity: 1; transform: scale(1); }
+      }
+      .scroll-cue {
+        position: absolute;
+        bottom: max(22px, env(safe-area-inset-bottom));
+        color: rgba(255,255,255,.78);
+        text-decoration: none;
+        font-size: .72rem;
+        font-weight: 800;
+        letter-spacing: .18em;
+        text-transform: uppercase;
+      }
+      .scroll-cue::after {
+        content: "";
+        display: block;
+        width: 1px;
+        height: 28px;
+        margin: 10px auto 0;
+        background: currentColor;
+        animation: pulse 1.5s ease-in-out infinite;
+      }
+      @keyframes pulse { 50% { transform: scaleY(.45); opacity: .3; } }
+
+      .concept {
+        min-height: 72svh;
+        padding: clamp(84px, 12vw, 150px) max(24px, 8vw);
+        display: grid;
+        align-content: center;
+        background: #fff;
+        color: #090909;
+      }
+      .eyebrow {
+        margin: 0 0 18px;
+        font-size: .76rem;
+        font-weight: 800;
+        letter-spacing: .2em;
+        text-transform: uppercase;
+      }
+      .concept h1 {
+        max-width: 900px;
+        margin: 0;
+        font-size: clamp(2.45rem, 6.3vw, 6.4rem);
+        line-height: .92;
+        letter-spacing: -.07em;
+        text-transform: uppercase;
+      }
+      .concept-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(280px, .6fr);
+        gap: clamp(48px, 8vw, 130px);
+        align-items: end;
+      }
+      .concept-aside {
+        max-width: 560px;
+        margin: 0 0 .35rem auto;
+        font-size: clamp(1.1rem, 2.2vw, 1.55rem);
+        line-height: 1.45;
+        font-weight: 600;
+      }
+      .concept-note {
+        margin: clamp(18px, 2.5vw, 30px) 0 0;
+        font-size: clamp(.9rem, 1.3vw, 1.1rem);
+        font-weight: 700;
+        letter-spacing: .01em;
+        text-transform: lowercase;
+      }
+
+      .identity {
+        min-height: 82svh;
+        padding: clamp(70px, 9vw, 120px) 0 clamp(74px, 9vw, 120px);
+        overflow: hidden;
+        background: #000;
+        color: #fff;
+      }
+      .identity h2 {
+        margin: 0 0 clamp(42px, 6vw, 76px);
+        padding: 0 max(24px, 8vw);
+        font-size: clamp(3rem, 8vw, 8rem);
+        line-height: .86;
+        letter-spacing: -.065em;
+        text-transform: uppercase;
+      }
+      .posters-window {
+        width: 100%;
+        overflow: hidden;
+      }
+      .posters-track {
+        width: max-content;
+        display: flex;
+        will-change: transform;
+        animation: posters-right 32s linear infinite;
+      }
+      .posters-group {
+        display: flex;
+        flex-shrink: 0;
+        gap: clamp(14px, 2vw, 28px);
+        padding-right: clamp(14px, 2vw, 28px);
+      }
+      .poster-card {
+        width: clamp(220px, 23vw, 370px);
+        aspect-ratio: 1448 / 2048;
+        flex: none;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+        border: 0;
+        background: transparent;
+      }
+      .poster-card img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+      }
+      @keyframes posters-right {
+        from { transform: translateX(-50%); }
+        to { transform: translateX(0); }
+      }
+
+      .proposals {
+        min-height: 92svh;
+        padding: clamp(28px, 4vw, 58px);
+        display: grid;
+        grid-template-columns: minmax(0, 1.55fr) minmax(300px, .9fr);
+        gap: clamp(28px, 4vw, 62px);
+        align-items: stretch;
+        background: #e7abc0;
+        color: #fff;
+      }
+      .proposals-gallery {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        min-height: 620px;
+        overflow: hidden;
+        background: #fff;
+      }
+      .proposals-image {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        opacity: 0;
+        transition: opacity 1.1s ease;
+      }
+      .proposals-image.is-active {
+        opacity: 1;
+        z-index: 1;
+      }
+      .proposals-copy {
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        padding: clamp(12px, 2vw, 30px) 0;
+      }
+      .proposals h2 {
+        margin: 0;
+        font-size: clamp(3rem, 5.6vw, 6.8rem);
+        line-height: .86;
+        letter-spacing: .025em;
+        text-transform: uppercase;
+      }
+      .proposals-intro {
+        max-width: 470px;
+        margin: clamp(28px, 4vw, 54px) 0;
+        font-size: clamp(1.5rem, 2.65vw, 2.65rem);
+        line-height: 1.12;
+      }
+      .proposal-form {
+        display: grid;
+        gap: 16px;
+        width: 100%;
+        max-width: 620px;
+      }
+      .proposal-input {
+        width: 100%;
+        min-height: 165px;
+        max-height: 220px;
+        padding: 24px;
+        resize: vertical;
+        border: 0;
+        border-radius: 0;
+        outline: 3px solid transparent;
+        background: #fff;
+        color: #090909;
+        font: inherit;
+        font-size: clamp(1rem, 1.6vw, 1.25rem);
+        line-height: 1.5;
+      }
+      .proposal-input:focus { outline-color: #090909; }
+      .proposal-input::placeholder { color: #777; }
+      .proposal-submit {
+        justify-self: start;
+        min-width: 210px;
+        padding: 17px 24px;
+        border: 2px solid #090909;
+        border-radius: 0;
+        background: #090909;
+        color: #fff;
+        font: inherit;
+        font-size: .9rem;
+        font-weight: 800;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background .2s ease, color .2s ease;
+      }
+      .proposal-submit:hover,
+      .proposal-submit:focus-visible {
+        background: #fff;
+        color: #090909;
+        outline: none;
+      }
+      .proposal-note,
+      .proposal-status {
+        margin: 0;
+        max-width: 560px;
+        font-size: .78rem;
+        line-height: 1.45;
+      }
+      .proposal-status {
+        display: none;
+        padding: 14px 16px;
+        background: #090909;
+        color: #fff;
+        font-weight: 700;
+      }
+      .proposal-status.visible { display: block; }
+      .honey-field {
+        position: absolute;
+        left: -10000px;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+      }
+
+      .varsity-entry {
+        position: relative;
+        overflow: hidden;
+        background: #00552e;
+        color: #ffbf00;
+      }
+      .varsity-entry-link {
+        position: relative;
+        isolation: isolate;
+        height: clamp(190px, 12vw, 230px);
+        min-height: 190px;
+        padding: 20px clamp(28px, 3vw, 60px);
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) auto minmax(270px, .62fr);
+        gap: clamp(32px, 6vw, 112px);
+        align-items: center;
+        color: inherit;
+        text-decoration: none;
+      }
+      .varsity-entry-link::before {
+        content: "";
+        position: absolute;
+        inset: -30px;
+        z-index: -2;
+        background-image: url('assets/OSO.png');
+        background-repeat: repeat;
+        background-size: 115px auto;
+        opacity: .045;
+        transform: rotate(-4deg) scale(1.08);
+      }
+      .varsity-entry-title {
+        font-family: "Varsity CH", Impact, sans-serif;
+        font-size: clamp(5rem, 9vw, 10.2rem);
+        line-height: .7;
+        letter-spacing: .015em;
+        text-transform: uppercase;
+      }
+      .varsity-entry-button {
+        padding: 18px 42px 15px;
+        border-radius: 999px;
+        background: #ffbf00;
+        color: #00552e;
+        font-family: "Varsity CH", Impact, sans-serif;
+        font-size: clamp(1.65rem, 3vw, 3.2rem);
+        line-height: 1;
+        text-transform: uppercase;
+        transition: transform .25s ease, background .25s ease;
+      }
+      .varsity-entry-bear {
+  position: absolute;
+  z-index: -1;
+
+  width: clamp(1000px, 32vw, 1000px);
+
+  right: -400px;
+  bottom: -600px;
+
+  transition: transform .35s cubic-bezier(.2, .8, .2, 1);
+}
+      .varsity-entry-link:hover .varsity-entry-button,
+      .varsity-entry-link:focus-visible .varsity-entry-button { transform: scale(1.06); background: #fff; }
+      .varsity-entry-link:hover .varsity-entry-bear,
+      .varsity-entry-link:focus-visible .varsity-entry-bear { transform: translateX(-12px) rotate(-2deg); }
+      .varsity-entry-link:focus-visible { outline: 4px solid #fff; outline-offset: -4px; }
+
+      .site-footer {
+        overflow: hidden;
+        background: #fff;
+        color: #090909;
+      }
+      .footer-marquee {
+        width: 100%;
+        overflow: hidden;
+        border-bottom: 1px solid #d9d9d9;
+      }
+      .footer-marquee-track {
+        width: max-content;
+        display: flex;
+        animation: footer-scroll 16s linear infinite;
+      }
+      .footer-marquee-group {
+        display: flex;
+        flex-shrink: 0;
+      }
+      .footer-marquee span {
+        padding: clamp(24px, 4vw, 48px) clamp(28px, 4vw, 64px);
+        font-size: clamp(3.2rem, 8vw, 8.5rem);
+        font-weight: 800;
+        line-height: .85;
+        letter-spacing: -.065em;
+        white-space: nowrap;
+        text-transform: uppercase;
+      }
+      @keyframes footer-scroll { to { transform: translateX(-50%); } }
+      .social-footer {
+        padding: clamp(50px, 8vw, 100px) 24px;
+        display: grid;
+        place-items: center;
+      }
+      .instagram-link {
+        display: grid;
+        place-items: center;
+        color: #090909;
+        text-decoration: none;
+        transition: color .2s ease, transform .2s ease;
+      }
+      .instagram-link:hover,
+      .instagram-link:focus-visible { color: #d86591; transform: translateY(-3px); }
+      .instagram-link svg { width: clamp(44px, 6vw, 68px); height: auto; }
+      .instagram-link span {
+        margin-top: 14px;
+        font-size: .78rem;
+        font-weight: 800;
+        letter-spacing: .15em;
+        text-transform: uppercase;
+      }
+
+      @media (max-width: 600px) {
+        :root { --bar-height: 54px; }
+        .hero-logo { width: min(58vw, 260px); }
+        .concept { min-height: 65svh; }
+        .concept-grid { grid-template-columns: 1fr; gap: 52px; }
+        .concept-aside { margin-left: 0; }
+        .identity { min-height: 70svh; }
+        .poster-card { width: min(68vw, 300px); }
+        .proposals { grid-template-columns: 1fr; min-height: auto; }
+        .proposals-gallery { min-height: 0; aspect-ratio: 1; }
+        .proposals-copy { padding: 24px 0 8px; }
+        .proposal-input { min-height: 145px; max-height: 190px; }
+        .varsity-entry-link {
+          height: auto;
+          min-height: 360px;
+          padding: 38px 24px;
+          grid-template-columns: 1fr;
+          align-content: start;
+          justify-items: start;
+          gap: 28px;
+        }
+        .varsity-entry-title { font-size: clamp(4rem, 21vw, 6.2rem); }
+        .varsity-entry-button { font-size: 1.65rem; padding: 16px 28px 13px; }
+        .varsity-entry-bear { width: 300px; right: -78px; bottom: -45px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+        *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <button class="menu-button" aria-label="Abrir menú" aria-expanded="false" aria-controls="main-menu">
+        <span class="menu-icon" aria-hidden="true"><span></span></span>
+      </button>
+      <div class="announcement" aria-label="Avisos de CHALETEO">
+        <div class="announcement-track">
+          <div class="announcement-group">
+            <span>NO TE LO PIERDAS.</span>
+            <span>CH IS HOME.</span>
+            <span>QUE NO TE LO CUENTEN.</span>
+            <span>VENTE ANDA...</span>
+          </div>
+          <div class="announcement-group" aria-hidden="true">
+            <span>NO TE LO PIERDAS.</span>
+            <span>CH IS HOME.</span>
+            <span>QUE NO TE LO CUENTEN.</span>
+            <span>VENTE ANDA...</span>
+          </div>
+        </div>
+      </div>
+      <div aria-hidden="true"></div>
+    </header>
+
+    <nav class="drawer" id="main-menu" aria-label="Menú principal">
+      <p class="drawer-label">Menú</p>
+      <a href="#inicio">Inicio</a>
+      <a href="#concepto">Qué es CHALETEO</a>
+      <a href="#asi-somos">Así somos</a>
+      <a href="#propuestas">Propuestas</a>
+      <a href="#proximo">Próximo CH</a>
+      <p class="drawer-foot">CH IS HOME™</p>
+    </nav>
+    <button class="scrim" aria-label="Cerrar menú" tabindex="-1"></button>
+
+    <main>
+      <section class="hero" id="inicio" aria-label="Portada de CHALETEO">
+        <video class="hero-video" autoplay muted loop playsinline webkit-playsinline preload="auto" disablepictureinpicture aria-hidden="true">
+          <source src="assets/video-fondo.mp4" type="video/mp4" />
+        </video>
+        <img class="hero-logo" src="assets/logo.jpg" alt="logo.jpg" />
+        <a class="scroll-cue" href="#concepto">Descubre</a>
+      </section>
+
+      <section class="concept" id="concepto">
+        <p class="eyebrow">CHALETEO</p>
+        <div class="concept-grid">
+          <div>
+            <h1>No te hagas el tonto, ya nos conoces.</h1>
+            <p class="concept-note">si no no estarías aquí.</p>
+          </div>
+          <p class="concept-aside">En fin, por si acaso, Chaleteo es una forma de crear recuerdos que dentro de unos años volverán a hacernos sonreír.</p>
+        </div>
+      </section>
+
+      <section class="identity" id="asi-somos">
+  <h2>Así somos</h2>
+
+  <div class="posters-window" aria-label="Carteles de CHALETEO">
+    <div class="posters-track">
+
+      <!-- PRIMER GRUPO -->
+      <div class="posters-group">
+
+        <article class="poster-card">
+          <img src="assets/CARTEL.png" alt="Cartel CHALETEO">
+        </article>
+<article class="poster-card">
+          <img src="assets/cartel halloween.png" alt="Cartel CHALETEO">
+        </article>
+
+        <article class="poster-card">
+          <img src="assets/1.png" alt="Cartel CHALETEO">
+        </article>
+
+        <article class="poster-card">
+          <img src="assets/cartel 2.png" alt="Cartel CHALETEO">
+        </article>
+
+        <article class="poster-card">
+          <img src="assets/DISNEY.png" alt="Cartel CHALETEO">
+        </article>
+
+        <article class="poster-card">
+          <img src="assets/cartel2222222.png" alt="Cartel CHALETEO">
+        </article>
+
+      </div>
+
+      <!-- COPIA PARA QUE EL CARRUSEL SEA INFINITO -->
+      <div class="posters-group" aria-hidden="true">
+
+        <article class="poster-card">
+          <img src="assets/CARTEL.png" alt="">
+        </article>
+<article class="poster-card">
+          <img src="assets/cartel halloween.png" alt="Cartel CHALETEO">
+        </article>
+
+        <article class="poster-card">
+          <img src="assets/1.png" alt="">
+        </article>
+
+        <article class="poster-card">
+          <img src="assets/cartel 2.png" alt="">
+        </article>
+
+        <article class="poster-card">
+          <img src="assets/DISNEY.png" alt="">
+        </article>
+
+        <article class="poster-card">
+          <img src="assets/cartel2222222.png" alt="">
+        </article>
+
+      </div>
+
+    </div>
+  </div>
+</section>
+
+      <section class="proposals" id="propuestas">
+        <div class="proposals-gallery" aria-label="Imágenes de CHALETEO en reproducción automática">
+          <img class="proposals-image is-active" src="assets/cartel-propuestas.png" alt="Cartel de CHALETEO en un paisaje abierto" aria-hidden="false" />
+          <img class="proposals-image" src="assets/pegatina movil.png" alt="Diseño retro de CHALETEO inspirado en un teléfono clásico" aria-hidden="true" />
+          <img class="proposals-image" src="assets/ChatGPT Image 7 sept 2026, 13_43_27.png" alt="Logo rosa de CHALETEO con dos estrellas" aria-hidden="true" />
+<img class="proposals-image is-active" src="assets/pegatina internet explorer.png" alt="Cartel de CHALETEO internet explorer" aria-hidden="false" />
+
+
+        </div>
+        <div class="proposals-copy">
+          <h2>Que CH quieres tu?</h2>
+          <p class="proposals-intro">Danos tu propuesta para un Chaleteo ideal.</p>
+          <form class="proposal-form" action="https://formsubmit.co/adrianperi408@gmail.com" method="POST">
+            <input type="hidden" name="_subject" value="[CHALETEO] Nueva propuesta" />
+            <input type="hidden" name="_template" value="table" />
+            <input type="hidden" name="_next" value="https://chaleteo-entrada.adrianperi408.chatgpt.site/?enviado=1#propuestas" />
+            <label class="honey-field" aria-hidden="true">
+              No rellenes este campo
+              <input type="text" name="_honey" tabindex="-1" autocomplete="off" />
+            </label>
+            <textarea class="proposal-input" name="Propuesta" required maxlength="1500" aria-label="Escribe tu propuesta para CHALETEO" placeholder="Escribe aquí tu propuesta..."></textarea>
+            <button class="proposal-submit" type="submit">Enviar propuesta</button>
+            <p class="proposal-note">La propuesta se enviará por correo a CHALETEO mediante un servicio de formularios.</p>
+            <p class="proposal-status" role="status" aria-live="polite">Propuesta enviada. Gracias por formar parte de CHALETEO.</p>
+          </form>
+        </div>
+      </section>
+
+      <section class="varsity-entry" id="proximo" aria-label="Próximo CHALETEO: Varsity">
+        <a class="varsity-entry-link" href="varsity.html">
+          <strong class="varsity-entry-title">NEXT CH</strong>
+          <span class="varsity-entry-button">Entrar</span>
+          <img class="varsity-entry-bear" src="assets/OSO.png" alt="" aria-hidden="true" />
+        </a>
+      </section>
+    </main>
+
+    <footer class="site-footer" id="instagram">
+      <div class="footer-marquee" aria-label="CH is Home">
+        <div class="footer-marquee-track" aria-hidden="true">
+          <div class="footer-marquee-group"><span>CH is Home</span><span>CH is Home</span><span>CH is Home</span></div>
+          <div class="footer-marquee-group"><span>CH is Home</span><span>CH is Home</span><span>CH is Home</span></div>
+        </div>
+      </div>
+      <div class="social-footer">
+        <a class="instagram-link" href="https://www.instagram.com/chaleteoworld/" target="_blank" rel="noopener noreferrer" aria-label="Abrir Instagram de CHALETEO">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="5"></rect>
+            <circle cx="12" cy="12" r="4"></circle>
+            <circle cx="17.4" cy="6.6" r="1" fill="currentColor" stroke="none"></circle>
+          </svg>
+          <span>@chaleteoworld</span>
+        </a>
+      </div>
+    </footer>
+
+    <script>
+      const menuButton = document.querySelector('.menu-button');
+      const drawer = document.querySelector('.drawer');
+      const scrim = document.querySelector('.scrim');
+      const links = drawer.querySelectorAll('a');
+
+      function setMenu(open) {
+        drawer.classList.toggle('open', open);
+        scrim.classList.toggle('visible', open);
+        menuButton.setAttribute('aria-expanded', String(open));
+        menuButton.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+        document.body.style.overflow = open ? 'hidden' : '';
+      }
+
+      menuButton.addEventListener('click', () => setMenu(!drawer.classList.contains('open')));
+      scrim.addEventListener('click', () => setMenu(false));
+      links.forEach(link => link.addEventListener('click', () => setMenu(false)));
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape') setMenu(false);
+      });
+
+      const video = document.querySelector('.hero-video');
+
+      function keepVideoPlaying() {
+        if (document.visibilityState !== 'hidden' && video.paused) {
+          video.play().catch(() => {});
+        }
+      }
+
+      video.muted = true;
+      video.defaultMuted = true;
+      video.playsInline = true;
+      video.setAttribute('muted', '');
+      video.setAttribute('playsinline', '');
+      video.setAttribute('webkit-playsinline', '');
+
+      video.addEventListener('ended', () => {
+        video.currentTime = 0;
+        keepVideoPlaying();
+      });
+      video.addEventListener('pause', () => {
+        window.setTimeout(keepVideoPlaying, 120);
+      });
+      video.addEventListener('canplay', keepVideoPlaying);
+      document.addEventListener('visibilitychange', keepVideoPlaying);
+      window.addEventListener('pageshow', keepVideoPlaying);
+      window.addEventListener('focus', keepVideoPlaying);
+      document.addEventListener('touchstart', keepVideoPlaying, { once: true, passive: true });
+      document.addEventListener('pointerdown', keepVideoPlaying, { once: true, passive: true });
+      keepVideoPlaying();
+
+      const params = new URLSearchParams(window.location.search);
+      const proposalStatus = document.querySelector('.proposal-status');
+      if (params.get('enviado') === '1' && proposalStatus) {
+        proposalStatus.classList.add('visible');
+        window.history.replaceState({}, '', `${window.location.pathname}#propuestas`);
+      }
+
+      const proposalSlides = [...document.querySelectorAll('.proposals-image')];
+      let proposalSlideIndex = 0;
+
+      if (proposalSlides.length > 1) {
+        window.setInterval(() => {
+          proposalSlides[proposalSlideIndex].classList.remove('is-active');
+          proposalSlides[proposalSlideIndex].setAttribute('aria-hidden', 'true');
+          proposalSlideIndex = (proposalSlideIndex + 1) % proposalSlides.length;
+          proposalSlides[proposalSlideIndex].classList.add('is-active');
+          proposalSlides[proposalSlideIndex].setAttribute('aria-hidden', 'false');
+        }, 4000);
+      }
+    </script>
+  </body>
+</html>

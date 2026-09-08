@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#00552e"><title>CHALETEO Varsity</title>
+  <style>
+    @font-face{font-family:"Varsity CH";src:url("assets/VarsityTeam-Bold.otf") format("opentype");font-weight:700;font-display:swap}
+    :root{--green:#00552e;--dark:#002b18;--yellow:#ffba00}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--green);color:#fff;font-family:Arial,Helvetica,sans-serif}
+    .back-button{position:fixed;z-index:50;top:20px;left:20px;padding:13px 22px 11px;border:2px solid #090909;background:#fff;color:#090909;font-family:"Varsity CH",Impact,sans-serif;font-size:1rem;line-height:1;letter-spacing:.08em;text-decoration:none;text-transform:uppercase;box-shadow:5px 5px 0 #090909;transition:transform .2s ease,box-shadow .2s ease}.back-button:hover,.back-button:focus-visible{transform:translate(3px,3px);box-shadow:2px 2px 0 #090909}.back-button:focus-visible{outline:3px solid var(--yellow);outline-offset:4px}
+    .varsity-hero {
+      position: relative;
+      min-height: 100svh;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      background: #000;
+    }
+
+    /* El fondo verde aparece después de pulsar el logo */
+    .varsity-hero::before {
+      content: "";
+      position: absolute;
+      inset: -35px;
+      z-index: 0;
+
+background-image:
+  radial-gradient(
+    circle at 50% 47%,
+    rgba(0, 97, 57, 0.98) 0,
+    rgba(0, 85, 46, 0.98) 48%,
+    rgba(0, 43, 24, 0.98) 100%
+  ),
+  url("assets/OSO.png");
+
+background-repeat: no-repeat, repeat;
+background-size: cover, 115px auto;
+      background-position: 0 0, center;
+
+      opacity: 0;
+      transform: rotate(-3deg) scale(1.05);
+      transition: opacity 0.8s ease;
+    }
+
+    .varsity-hero::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+
+  left: 50%;
+  top: 50%;
+  width: min(75vw, 1100px);
+  aspect-ratio: 1;
+
+  background-image:
+  linear-gradient(#b3a53a, #b3a53a),
+  url("assets/1000085224.jpg");
+
+background-blend-mode: multiply;
+mix-blend-mode: screen;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+
+  opacity: 0;
+  mix-blend-mode: screen;
+
+  transform: translate(-50%, -50%) scale(0.84);
+
+  transition:
+    opacity 0.7s ease 0.15s,
+    transform 1s cubic-bezier(.2, .8, .2, 1);
+}
+   /* ========================================
+   PORTADA INICIAL: OSO Y BOTÓN
+======================================== */
+
+.intro-button {
+  position: relative;
+  z-index: 4;
+
+  width: min(38vw, 480px);
+  padding: 0;
+
+  border: 0;
+  background: transparent;
+  color: #fff;
+
+  cursor: pointer;
+
+  transition:
+    opacity 0.45s ease,
+    transform 0.8s cubic-bezier(.4, 0, .2, 1),
+    filter 0.2s ease;
+}
+
+.intro-button:hover {
+  filter: brightness(1.08);
+  transform: scale(1.025);
+}
+
+.intro-button:focus-visible {
+  outline: 4px solid var(--yellow);
+  outline-offset: 10px;
+}
+
+.intro-logo {
+  display: block;
+  width: 100%;
+  max-height: 72svh;
+  object-fit: contain;
+}
+
+
+/* ========================================
+   CARTEL Y MARCO
+======================================== */
+
+.poster-stage {
+  position: absolute;
+  z-index: 5;
+
+  width: min(45vw, 640px);
+  aspect-ratio: 1;
+
+  display: grid;
+  place-items: center;
+
+  opacity: 0;
+  pointer-events: none;
+
+  transform: scale(0.2) rotate(-8deg);
+
+  transition:
+    opacity 0.55s ease 0.2s,
+    transform 1.05s cubic-bezier(.18, .9, .22, 1.18) 0.12s;
+}
+
+.poster-art {
+  position: absolute;
+  z-index: 1;
+
+  width: 52%;
+  height: 68%;
+
+  object-fit: cover;
+  box-shadow: 0 24px 55px #0005;
+}
+
+.poster-frame {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+  filter: drop-shadow(0 22px 28px #0005);
+}
+
+
+/* ========================================
+   TEXTO "DESCUBRE VARSITY"
+======================================== */
+
+.scroll-next {
+  position: absolute;
+  z-index: 7;
+
+  bottom: 18px;
+
+  color: #fff;
+
+  font-family: "Varsity CH", Impact, sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+
+  opacity: 0;
+  pointer-events: none;
+
+  transform: translateY(10px);
+
+  transition:
+    opacity 0.4s ease 1s,
+    transform 0.4s ease 1s;
+}
+
+
+/* ========================================
+   ANIMACIÓN DESPUÉS DE HACER CLIC
+======================================== */
+
+.varsity-hero.revealed .intro-button {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(1.4) rotate(5deg);
+}
+
+.varsity-hero.revealed::before {
+  opacity: 1;
+}
+
+.varsity-hero.revealed::after {
+  opacity: 0.12;
+  transform: translate(-50%, -50%) scale(1.4);
+}
+
+.varsity-hero.revealed .poster-stage {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.varsity-hero.revealed .scroll-next {
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+
+
+/* Descripción: composición de la referencia, escalada con el ancho. */
+.varsity-about {
+  position: relative;
+  isolation: isolate;
+  min-height: max(100svh, 50.35vw);
+  padding: 0 0 8vw;
+  overflow: hidden;
+  background: #ffba00;
+  color: #fff2cc;
+}
+.varsity-about::before {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  inset: 7.08vw 0 0 5.68vw;
+  border-radius: 4.2vw 0 0 0;
+  background: #004b25;
+}
+.about-heading {
+  position: relative;
+  z-index: 2;
+  height: 21.6vw;
+}
+.about-ch {
+  position: absolute;
+  top: 3.45vw;
+  left: 8.8vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 13.5vw;
+  font-family: "Varsity CH", Impact, sans-serif;
+  font-weight: 700;
+  font-size: 26vw;
+  line-height: .8;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+.about-ch span { display: block; }
+.varsity-about h1 {
+  position: absolute;
+  left: 25.35vw;
+  top: 5.3vw;
+  margin: 0;
+  font-family: "Varsity CH", Impact, sans-serif;
+  font-weight: 700;
+  font-size: 20vw;
+  line-height: .8;
+  letter-spacing: -.02em;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+.about-logo {
+  position: absolute;
+  z-index: -1;
+  right: -22vw;
+  top: 9vw;
+  width: 75vw;
+  height: auto;
+  opacity: .06;
+  filter: invert(1);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+.about-copy {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3.35vw;
+  margin: 0 4.45vw 0 28.2vw;
+  font-size: 1.77vw;
+  line-height: 1.18;
+  font-weight: 700;
+}
+.about-copy p { margin: 0; }
+.varsity-hero::after { display: none; }
+
+@media (max-width: 760px) {
+  .back-button { top:14px; left:14px; padding:11px 17px 9px; font-size:.85rem; }
+  .intro-button { width:min(72vw,340px); }
+  .poster-stage { width:min(96vw,520px); }
+  .varsity-about { min-height:100svh; padding-top:70px; padding-bottom:40px; }
+  .varsity-about::before { top:calc(70px + 7.08vw); }
+  .about-logo { top:150px; width:125vw; right:-55vw; }
+  .about-copy { grid-template-columns:1fr; gap:24px; font-size:clamp(1rem,2.5vw,1.3rem); line-height:1.3; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior:auto; }
+  *, *::before, *::after { transition-duration:.01ms !important; animation-duration:.01ms !important; }
+}
+</style>
+</head>
+<body>
+  <a class="back-button" href="index.html">Volver</a>
+  <main>
+    <section class="varsity-hero" id="portada" aria-label="Portada de CHALETEO Varsity">
+      <button class="intro-button" type="button" aria-label="Entrar en CHALETEO Varsity" aria-controls="varsity-poster" aria-expanded="false"><img class="intro-logo" src="assets/1000085224.jpg" alt=""></button>
+      <div class="poster-stage" id="varsity-poster" aria-hidden="true"><img class="poster-art" src="assets/CARTELvarsity.png" alt="Cartel de CHALETEO Varsity"><img class="poster-frame" src="assets/ChatGPT Image 7 sept 2026, 16_43_12.png" alt="" aria-hidden="true"></div>
+      <a class="scroll-next" href="#que-es">Descubre Varsity ↓</a>
+    </section>
+    <section class="varsity-about" id="que-es"><div class="about-heading" aria-label="CH Varsity"><span class="about-ch" aria-hidden="true"><span>C</span><span>H</span></span><h1>Varsity</h1></div><img class="about-logo" src="assets/1000085224.jpg" alt="" aria-hidden="true"><div class="about-copy">
+        <p>CH Varsity es nuestra forma de vivir la universidad, pero a nuestra manera. Una edición inspirada en la estética de las universidades americanas, donde por un día dejamos de ser simplemente un grupo de amigos para convertirnos en equipos, competir, jugar, reírnos y crear historias que seguramente recordaremos durante mucho tiempo.</p>
+        <p>Aquí no importan las clases, los exámenes ni las notas. Importa estar con los tuyos, defender a tu equipo, darlo todo en cada juego, cantar las canciones que todos conocemos y disfrutar de esos momentos que empiezan siendo una tontería y terminan convirtiéndose en los mejores recuerdos.</p>
+      </div></section>
+  </main>
+  <script>
+    const hero=document.querySelector('.varsity-hero'),trigger=document.querySelector('.intro-button'),poster=document.querySelector('.poster-stage');
+    trigger.addEventListener('click',()=>{hero.classList.add('revealed');trigger.setAttribute('aria-expanded','true');poster.setAttribute('aria-hidden','false')});
+  </script>
+</body>
+</html>
